@@ -1,8 +1,8 @@
-def get_sum(a: float, b: float) -> float:
-    return a + b
+def get_sum(*args: float) -> float:
+    return sum(args)
 
 
 if __name__ == '__main__':
-    num1, num2 = map(float, input().split())
-    res = get_sum(num1, num2)
+    nums = map(float, input().split())
+    res = get_sum(*nums)
     print(res)
