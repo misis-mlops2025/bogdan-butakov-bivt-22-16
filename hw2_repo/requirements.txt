@@ -1,0 +1,17 @@
+black
+coverage
+joblib
+loguru
+numpy
+pandas
+pip
+pydantic>=2.0
+pylint
+pytest
+python-dotenv
+PyYAML
+ruff
+scikit-learn>=1.0
+tqdm
+typer
+-e .
