@@ -61,12 +61,16 @@ class DecisionTreeConfig(ModelConfig):
     min_samples_leaf: int = Field(1, ge=1)
 
 
+def load_config(cfg_path: Path):
+    with open(cfg_path) as config_file:
+        return yaml.safe_load(config_file)
+
+
 T = TypeVar("T", bound="ModelConfig")
 
 
 def get_model_config(model_cfg_path: Path, model_type: T) -> T:
-    with open(model_cfg_path) as config_file:
-        loaded_config = yaml.safe_load(config_file)
+    loaded_config = load_config(model_cfg_path)
     return model_type(**loaded_config)
 
 
