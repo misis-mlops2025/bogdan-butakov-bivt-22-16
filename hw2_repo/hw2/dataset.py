@@ -7,9 +7,8 @@ import yaml
 from loguru import logger
 from sklearn.datasets import make_classification
 from sklearn.model_selection import train_test_split
-from tqdm import tqdm
 
-from hw2.config import CONFIG_DIR, PROCESSED_DATA_DIR, DataConfig
+from hw2.config import CONFIG_DIR, CONFIG_FILE_NAME, PARAMS_PATH, PROCESSED_DATA_DIR, DataConfig, load_yaml
 
 app = typer.Typer()
 
@@ -35,7 +34,7 @@ def generate_dataset(cfg: DataConfig) -> tuple[np.ndarray, np.ndarray]:
 def main(
     # ---- REPLACE DEFAULT PATHS AS APPROPRIATE ----
     output_path: Path = PROCESSED_DATA_DIR,
-    config_path: Path = CONFIG_DIR / "data_config.yaml"
+    config_path: Path = CONFIG_DIR / CONFIG_FILE_NAME
     # ----------------------------------------------
 ):
     # ---- REPLACE THIS WITH YOUR OWN CODE ----
@@ -47,17 +46,15 @@ def main(
 
     x_train, x_test, y_train, y_test = generate_dataset(data_cfg)
 
-    x_train.to_csv(output_path / "features.csv", index=False)
-    y_train.to_csv(output_path / "labels.csv", index=False)
-    x_test.to_csv(output_path / "test_features.csv", index=False)
-    y_test.to_csv(output_path / "test_labels.csv", index=False)
+    params = load_yaml(PARAMS_PATH)
+    files = params["files"]
+
+    x_train.to_csv(output_path / files["features"], index=False)
+    y_train.to_csv(output_path / files["labels"], index=False)
+    x_test.to_csv(output_path / files["test_features"], index=False)
+    y_test.to_csv(output_path / files["test_labels"], index=False)
 
     logger.info("Getting features and labels done...")
-
-    for i in tqdm(range(10), total=10):
-        if i == 5:
-            logger.info("Something happened for iteration 5.")
-    logger.success("Processing dataset complete.")
     # -----------------------------------------
 
 

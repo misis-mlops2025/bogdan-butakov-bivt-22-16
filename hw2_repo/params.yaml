@@ -1,0 +1,56 @@
+paths:
+  project_root: .
+  data_dir: data
+  processed_dir: data/processed
+  models_dir: models
+  config_dir: config
+  model_config_dir: config/model_config
+  reports_dir: reports
+  figures_dir: reports/figures
+
+files:
+  config: data_config.yaml
+  features: features.csv
+  labels: labels.csv
+  test_features: test_features.csv
+  test_labels: test_labels.csv
+  model_configs:
+    random_forest: random_forest.yaml
+    decision_tree: decision_tree.yaml
+    log_reg: log_reg.yaml
+  model_extension: .pkl
+
+data:
+  n_samples: 1000
+  n_features: 20
+  n_informative: 5
+  n_redundant: 0
+  random_state: 42
+  test_size: 0.2
+  model_type: log_reg
+
+model:
+  random_forest:
+    n_estimators: 100
+    max_depth: 10
+    min_samples_split: 2
+    min_samples_leaf: 1
+
+  log_reg:
+    c: 1.0
+    penalty: l2
+    max_iter: 1000
+
+  decision_tree:
+    criterion: gini
+    max_depth: 5
+    min_samples_split: 2
+    min_samples_leaf: 1
+
+train:
+  n_jobs: 1
+  seed: 42
+
+dvc:
+  remote_name: local_dvc_storage
+  remote_url: /tmp/local_dvc_storage

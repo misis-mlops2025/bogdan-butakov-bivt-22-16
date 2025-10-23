@@ -1,0 +1,78 @@
+vars:
+  - params.yaml
+
+stages:
+  make_dataset:
+    cmd: python -m hw2.dataset --output-path ${paths.processed_dir} --config-path ${paths.config_dir}/${files.config}
+    deps:
+      - hw2/dataset.py
+      - hw2/config.py
+      - config/${files.config}
+    params:
+      - paths.processed_dir
+      - paths.config_dir
+      - data.n_samples
+      - data.n_features
+      - data.n_informative
+      - data.n_redundant
+      - data.random_state
+      - data.test_size
+      - data.model_type
+    outs:
+      - ${paths.processed_dir}/${files.features}
+      - ${paths.processed_dir}/${files.labels}
+      - ${paths.processed_dir}/${files.test_features}
+      - ${paths.processed_dir}/${files.test_labels}
+
+  train_model:
+    cmd: python -m hw2.modeling.train --config-path ${paths.config_dir}/${files.config} --features-path ${paths.processed_dir}/${files.features} --labels-path ${paths.processed_dir}/${files.labels} --model-type ${data.model_type}
+    deps:
+      - hw2/modeling/train.py
+      - hw2/config.py
+      - config/${files.config}
+      - ${paths.model_config_dir}/${files.model_configs.random_forest}
+      - ${paths.model_config_dir}/${files.model_configs.decision_tree}
+      - ${paths.model_config_dir}/${files.model_configs.log_reg}
+      - ${paths.processed_dir}/${files.features}
+      - ${paths.processed_dir}/${files.labels}
+    params:
+      - paths.config_dir
+      - paths.processed_dir
+      - paths.models_dir
+      - model.random_forest.n_estimators
+      - model.random_forest.max_depth
+      - model.random_forest.min_samples_split
+      - model.random_forest.min_samples_leaf
+      - model.log_reg.c
+      - model.log_reg.penalty
+      - model.log_reg.max_iter
+      - model.decision_tree.criterion
+      - model.decision_tree.max_depth
+      - model.decision_tree.min_samples_split
+      - model.decision_tree.min_samples_leaf
+      - train.n_jobs
+      - data.model_type
+    outs:
+      - ${paths.models_dir}/${data.model_type}${files.model_extension}
+
+  validate:
+    cmd: python -m hw2.modeling.validation --features-path ${paths.processed_dir}/${files.test_features} --labels-path ${paths.processed_dir}/${files.test_labels} --model-type ${data.model_type}
+    deps:
+      - hw2/modeling/validation.py
+      - ${paths.models_dir}/${data.model_type}${files.model_extension}
+      - ${paths.processed_dir}/${files.test_features}
+      - ${paths.processed_dir}/${files.test_labels}
+    params:
+      - paths.config_dir
+      - paths.processed_dir
+      - paths.models_dir
+      - data.model_type
+
+  # predict:
+  #   cmd: python -m hw2.modeling.predict --model-path models/random_forest.pkl --features-path data/processed/test_features.csv
+  #   deps:
+  #     - hw2/modeling/predict.py
+  #     - models/random_forest.pkl
+  #     - data/processed/test_features.csv
+  #   outs:
+  #     - data/processed/test_predictions.csv

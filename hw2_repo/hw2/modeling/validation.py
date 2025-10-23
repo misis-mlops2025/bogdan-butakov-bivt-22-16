@@ -1,13 +1,12 @@
 from pathlib import Path
 
-import joblib
 import pandas as pd
+import pickle
 import typer
 from loguru import logger
 from sklearn.metrics import log_loss
 
-from hw2.config import (CONFIG_DIR, MODELS_DIR, PROCESSED_DATA_DIR, DataConfig,
-                        load_config)
+from hw2.config import (CONFIG_DIR, CONFIG_FILE_NAME, MODEL_EXTENSION, MODEL_LOG_REG, MODELS_DIR, PROCESSED_DATA_DIR, TEST_FEATURES_FILE, TEST_LABELS_FILE)
 
 app = typer.Typer()
 
@@ -15,19 +14,19 @@ app = typer.Typer()
 @app.command()
 def main(
     # ---- REPLACE DEFAULT PATHS AS APPROPRIATE ----
-    config_path: Path = CONFIG_DIR / "data_config.yaml",
-    features_path: Path = PROCESSED_DATA_DIR / "test_features.csv",
-    labels_path: Path = PROCESSED_DATA_DIR / "test_labels.csv"
+    features_path: Path = PROCESSED_DATA_DIR / TEST_FEATURES_FILE,
+    labels_path: Path = PROCESSED_DATA_DIR / TEST_LABELS_FILE,
+    model_type: str = MODEL_LOG_REG,
     # -----------------------------------------
 ):
-    loaded_config = load_config(config_path)
-    data_cfg = DataConfig(**loaded_config)
 
     x_test, y_test = pd.read_csv(features_path), pd.read_csv(labels_path)
     logger.info('Test features and labels loaded')
 
-    model = joblib.load(MODELS_DIR / f"{data_cfg.model_type}.joblib")
-    logger.info(f'Model {data_cfg.model_type} loaded')
+    model_path = MODELS_DIR / f"{model_type}{MODEL_EXTENSION}"
+    with open(model_path, "rb") as f:
+        model = pickle.load(f)
+    logger.info(f'Model {model_type} loaded')
 
     predictions = model.predict(x_test)
 

@@ -8,8 +8,7 @@ def test_generate_dataset():
         n_informative=2,
         n_redundant=0,
         random_state=1,
-        test_size=0.2,
-        model_type="log_reg",
+        test_size=0.2
     )
     x_train, x_test, y_train, y_test = generate_dataset(cfg)
 
