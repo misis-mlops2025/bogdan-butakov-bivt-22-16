@@ -1,0 +1,153 @@
+schema: '2.0'
+stages:
+  make_dataset:
+    cmd: python -m hw2.dataset --output-path data/processed --config-path 
+      config/data_config.yaml
+    deps:
+    - path: config/data_config.yaml
+      hash: md5
+      md5: 46e69a7e0cd871cd66ed4fb3da75b9ed
+      size: 101
+      isexec: true
+    - path: hw2/config.py
+      hash: md5
+      md5: a4eb257453fdb3f1a4a65b6708c757ee
+      size: 3670
+      isexec: true
+    - path: hw2/dataset.py
+      hash: md5
+      md5: d6e01205051b3d5c6e7b65dce31de106
+      size: 1873
+      isexec: true
+    params:
+      params.yaml:
+        data.model_type: log_reg
+        data.n_features: 20
+        data.n_informative: 5
+        data.n_redundant: 0
+        data.n_samples: 1000
+        data.random_state: 42
+        data.test_size: 0.2
+        paths.config_dir: config
+        paths.processed_dir: data/processed
+    outs:
+    - path: data/processed/features.csv
+      hash: md5
+      md5: 4bb897b9b2d3a4cf66086e01593b6e7a
+      size: 313108
+      isexec: true
+    - path: data/processed/labels.csv
+      hash: md5
+      md5: 70106a210e15592ca254d13b3d0d07dd
+      size: 1602
+      isexec: true
+    - path: data/processed/test_features.csv
+      hash: md5
+      md5: a06452c2844bc033a457fd23f630614b
+      size: 78241
+      isexec: true
+    - path: data/processed/test_labels.csv
+      hash: md5
+      md5: 2efef646f14bae97158138a21b1de676
+      size: 402
+      isexec: true
+  train_model:
+    cmd: python -m hw2.modeling.train --config-path config/data_config.yaml 
+      --features-path data/processed/features.csv --labels-path 
+      data/processed/labels.csv --model-type log_reg
+    deps:
+    - path: config/data_config.yaml
+      hash: md5
+      md5: 46e69a7e0cd871cd66ed4fb3da75b9ed
+      size: 101
+      isexec: true
+    - path: config/model_config/decision_tree.yaml
+      hash: md5
+      md5: cfee8675898de8fe8552cc5654e87e78
+      size: 117
+      isexec: true
+    - path: config/model_config/log_reg.yaml
+      hash: md5
+      md5: b20343a83a657e3773a45b6dd6141950
+      size: 76
+      isexec: true
+    - path: config/model_config/random_forest.yaml
+      hash: md5
+      md5: 2145e366b35bdd90a870cb963e1cb6a6
+      size: 120
+      isexec: true
+    - path: data/processed/features.csv
+      hash: md5
+      md5: 4bb897b9b2d3a4cf66086e01593b6e7a
+      size: 313108
+      isexec: true
+    - path: data/processed/labels.csv
+      hash: md5
+      md5: 70106a210e15592ca254d13b3d0d07dd
+      size: 1602
+      isexec: true
+    - path: hw2/config.py
+      hash: md5
+      md5: a4eb257453fdb3f1a4a65b6708c757ee
+      size: 3670
+      isexec: true
+    - path: hw2/modeling/train.py
+      hash: md5
+      md5: 7583b073c6f5deca833fd41d28c917e8
+      size: 3647
+      isexec: true
+    params:
+      params.yaml:
+        data.model_type: log_reg
+        model.decision_tree.criterion: gini
+        model.decision_tree.max_depth: 5
+        model.decision_tree.min_samples_leaf: 1
+        model.decision_tree.min_samples_split: 2
+        model.log_reg.c: 1.0
+        model.log_reg.max_iter: 1000
+        model.log_reg.penalty: l2
+        model.random_forest.max_depth: 10
+        model.random_forest.min_samples_leaf: 1
+        model.random_forest.min_samples_split: 2
+        model.random_forest.n_estimators: 100
+        paths.config_dir: config
+        paths.models_dir: models
+        paths.processed_dir: data/processed
+        train.n_jobs: 1
+    outs:
+    - path: models/log_reg.pkl
+      hash: md5
+      md5: 6a2de571ad47d4b6a8d4099efc058ec8
+      size: 1054
+      isexec: true
+  validate:
+    cmd: python -m hw2.modeling.validation --features-path 
+      data/processed/test_features.csv --labels-path 
+      data/processed/test_labels.csv --model-type log_reg
+    deps:
+    - path: data/processed/test_features.csv
+      hash: md5
+      md5: a06452c2844bc033a457fd23f630614b
+      size: 78241
+      isexec: true
+    - path: data/processed/test_labels.csv
+      hash: md5
+      md5: 2efef646f14bae97158138a21b1de676
+      size: 402
+      isexec: true
+    - path: hw2/modeling/validation.py
+      hash: md5
+      md5: 9e18ee5ad12546dc46742a929517f7c3
+      size: 1110
+      isexec: true
+    - path: models/log_reg.pkl
+      hash: md5
+      md5: 6a2de571ad47d4b6a8d4099efc058ec8
+      size: 1054
+      isexec: true
+    params:
+      params.yaml:
+        data.model_type: log_reg
+        paths.config_dir: config
+        paths.models_dir: models
+        paths.processed_dir: data/processed

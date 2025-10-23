@@ -1,4 +1,4 @@
-model_type: logistic
+model_type: log_reg
 random_state: 42
 c: 1.0
 penalty: l2
